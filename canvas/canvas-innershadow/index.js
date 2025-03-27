@@ -25,7 +25,6 @@ function drawMap() {
     (canvas.width - 40) / (bounds.maxX - bounds.minX),
     (canvas.height - 40) / (bounds.maxY - bounds.minY)
   );
-  console.log("🚀 ~ drawMap ~ scale:", scale);
 
   // 偏移量，使地图居中
   const offsetX =
@@ -120,10 +119,6 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
   const shadowStyle = document.getElementById("shadow-style").value;
   const shadowBlur = parseInt(document.getElementById("shadow-blur").value);
   const shadowColor = document.getElementById("shadow-color").value;
-  const shadowOpacity =
-    parseInt(document.getElementById("shadow-opacity").value) / 100;
-
-  const shadowColorWithOpacity = hexToRgba(shadowColor, shadowOpacity);
 
   switch (shadowStyle) {
     case "glow":
@@ -133,7 +128,7 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
         offsetX,
         offsetY,
         shadowBlur,
-        shadowColorWithOpacity
+        shadowColor
       );
       break;
     case "multiple":
@@ -143,7 +138,7 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
         offsetX,
         offsetY,
         shadowBlur,
-        shadowColorWithOpacity
+        shadowColor
       );
       break;
     case "gradient":
@@ -154,7 +149,7 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
         offsetY,
         shadowBlur,
         shadowColor,
-        shadowOpacity
+        shadowColor
       );
       break;
     case "classic":
@@ -165,14 +160,14 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
         offsetX,
         offsetY,
         shadowBlur,
-        shadowColorWithOpacity
+        shadowColor
       );
       break;
   }
 }
 
 // 经典内阴影效果
-function drawClassicInnerShadow(
+function drawClassicInnerShadow1(
   coordinates,
   scale,
   offsetX,
@@ -224,6 +219,48 @@ function drawClassicInnerShadow(
   ctx.fillStyle = shadowColor;
   ctx.fill();
 
+  ctx.restore();
+}
+
+function drawClassicInnerShadow(
+  coordinates,
+  scale,
+  offsetX,
+  offsetY,
+  shadowBlur,
+  shadowColor
+) {
+  ctx.save();
+
+  const path2D = new Path2D();
+  // 首先绘制主要路径
+  for (let i = 0; i < coordinates.length; i++) {
+    const x = coordinates[i][0] * scale + offsetX;
+    const y = coordinates[i][1] * scale + offsetY;
+
+    if (i === 0) {
+      path2D.moveTo(x, y);
+    } else {
+      path2D.lineTo(x, y);
+    }
+  }
+  path2D.closePath();
+
+  // // 内阴影设置
+  ctx.save();
+  // source-out 在不与现有画布内容重叠的地方绘制新图形,绘制会导致画布上面之前的图形都变成透明的
+  ctx.globalCompositeOperation = "source-out";
+  ctx.shadowBlur = shadowBlur;
+  ctx.shadowColor = "#000";
+  ctx.fillStyle = shadowColor;
+  ctx.fill(path2D);
+  ctx.restore();
+
+  ctx.save();
+  // destination-over 在现有的画布内容后面绘制新的图形,绘制不会导致画布上面之前的图形都变为透明
+  ctx.globalCompositeOperation = "destination-over";
+  ctx.fillStyle = "rgba(0, 255, 0, 0.1)";
+  ctx.fill(path2D);
   ctx.restore();
 }
 
@@ -463,12 +500,6 @@ document.getElementById("shadow-blur").addEventListener("input", function () {
   document.getElementById("blur-value").textContent = this.value;
   drawMap();
 });
-document
-  .getElementById("shadow-opacity")
-  .addEventListener("input", function () {
-    document.getElementById("opacity-value").textContent = this.value + "%";
-    drawMap();
-  });
 document.getElementById("shadow-style").addEventListener("change", drawMap);
 
 // 为了确保至少显示一些内容，先用简化数据绘制一次
