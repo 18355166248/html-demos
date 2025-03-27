@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>地图Canvas内阴影效果</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <h2>安徽省地图 - Canvas内阴影效果展示</h2>
+
+    <div class="controls">
+      <div class="control-group">
+        <label for="shadow-color">阴影颜色</label>
+        <input type="color" id="shadow-color" value="#000000" />
+      </div>
+
+      <div class="control-group">
+        <label for="shadow-blur">阴影模糊值</label>
+        <input type="range" id="shadow-blur" min="1" max="30" value="15" />
+        <span id="blur-value">15</span>
+      </div>
+
+      <div class="control-group">
+        <label for="shadow-opacity">阴影透明度</label>
+        <input type="range" id="shadow-opacity" min="0" max="100" value="50" />
+        <span id="opacity-value">50%</span>
+      </div>
+
+      <div class="control-group">
+        <label for="shadow-style">阴影风格</label>
+        <select id="shadow-style">
+          <option value="classic">经典内阴影</option>
+          <option value="glow">内发光效果</option>
+          <option value="multiple">多层阴影</option>
+          <option value="gradient">渐变阴影</option>
+        </select>
+      </div>
+    </div>
+
+    <canvas id="mapCanvas"></canvas>
+
+    <script type="module" src="./index.js" />
+  </body>
+</html>
