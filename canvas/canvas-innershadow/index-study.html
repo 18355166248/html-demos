@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas内阴影</title>
+    <style>
+      body {
+        background-color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script type="module">
+      // 生成形状/边框的路径
+      const path2D = new Path2D();
+      path2D.moveTo(10, 10);
+      path2D.lineTo(290, 10);
+      path2D.lineTo(290, 140);
+      path2D.lineTo(10, 100);
+      path2D.closePath();
+      // 获取一下画布
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // fill的内阴影效果
+      ctx.save();
+      // source-out 在不与现有画布内容重叠的地方绘制新图形,绘制会导致画布上面之前的图形都变成透明的
+      ctx.globalCompositeOperation = "source-out";
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = "#000";
+      ctx.fillStyle = "red";
+      ctx.fill(path2D);
+      ctx.restore();
+
+      // ctx.save();
+      // // destination-over 在现有的画布内容后面绘制新的图形,绘制不会导致画布上面之前的图形都变为透明
+      // ctx.globalCompositeOperation = "destination-over";
+      // ctx.fillStyle = "#eee";
+      // ctx.fill(path2D);
+      // ctx.restore();
+
+      // stroke的内阴影效果
+      // ctx.save();
+      // ctx.globalCompositeOperation = "source-out";
+      // ctx.shadowBlur = 10;
+      // ctx.shadowColor = "#000";
+      // ctx.lineWidth = 20;
+      // ctx.strokeStyle = "red";
+      // ctx.stroke(path2D);
+      // ctx.restore();
+
+      // ctx.save();
+      // ctx.globalCompositeOperation = "destination-over";
+      // ctx.lineWidth = 20;
+      // ctx.strokeStyle = "#eee";
+      // ctx.stroke(path2D);
+      // ctx.restore();
+    </script>
+  </body>
+</html>
