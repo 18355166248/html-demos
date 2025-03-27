@@ -7,9 +7,12 @@ const data = anhuiData;
 
 const canvas = document.getElementById("mapCanvas");
 const ctx = canvas.getContext("2d");
+const width = document.documentElement.clientWidth * 0.8;
+const height = document.documentElement.clientHeight * 0.8;
+const size = Math.min(width, height);
 
-canvas.width = document.documentElement.clientWidth * 0.8;
-canvas.height = document.documentElement.clientWidth * 0.8;
+canvas.width = size;
+canvas.height = size;
 
 // 绘制地图函数
 function drawMap() {
