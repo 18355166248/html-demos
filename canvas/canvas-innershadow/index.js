@@ -7,12 +7,25 @@ const data = anhuiData;
 
 const canvas = document.getElementById("mapCanvas");
 const ctx = canvas.getContext("2d");
-const width = document.documentElement.clientWidth * 0.8;
-const height = document.documentElement.clientHeight * 0.8;
-const size = Math.min(width, height);
 
-canvas.width = size;
-canvas.height = size;
+// 初始化canvas尺寸
+function initCanvasSize() {
+  const canvasContainer = document.querySelector(".canvas-container");
+  const containerWidth = canvasContainer.clientWidth - 40; // 减去内边距
+  const containerHeight = canvasContainer.clientHeight - 40;
+
+  // 宽度超过600px时，自适应容器高度
+  let size;
+  if (window.innerWidth >= 600) {
+    size = Math.min(containerWidth, containerHeight);
+  } else {
+    // 小屏幕保持方形
+    size = Math.min(containerWidth, window.innerHeight * 0.5);
+  }
+
+  canvas.width = size;
+  canvas.height = size;
+}
 
 // 绘制地图函数
 function drawMap() {
@@ -171,7 +184,6 @@ function drawClassicInnerShadow(
   const fillColor = document.getElementById("classic-fill-color").value;
   const fillOpacity =
     document.getElementById("classic-fill-opacity").value / 100;
-  const innerColor = document.getElementById("classic-inner-color").value;
 
   const path2D = new Path2D();
   // 首先绘制主要路径
@@ -192,7 +204,7 @@ function drawClassicInnerShadow(
   // source-out 在不与现有画布内容重叠的地方绘制新图形,绘制会导致画布上面之前的图形都变成透明的
   ctx.globalCompositeOperation = "source-out";
   ctx.shadowBlur = shadowBlur;
-  ctx.shadowColor = innerColor;
+  ctx.shadowColor = "#000";
   ctx.fillStyle = shadowColor;
   ctx.fill(path2D);
   ctx.restore();
@@ -439,13 +451,7 @@ function hexToRgba(hex, opacity) {
 // 处理窗口大小变化
 function handleResize() {
   // 更新canvas大小
-  const canvasContainer = document.querySelector(".canvas-container");
-  const containerWidth = canvasContainer.clientWidth - 40; // 减去内边距
-  const containerHeight = canvasContainer.clientHeight - 40;
-  const size = Math.min(containerWidth, containerHeight, 600); // 设置最大尺寸
-
-  canvas.width = size;
-  canvas.height = size;
+  initCanvasSize();
 
   // 重新绘制
   drawMap();
@@ -487,6 +493,9 @@ function initApp() {
   // 设置初始布局
   adjustLayout();
 
+  // 初始化Canvas尺寸
+  initCanvasSize();
+
   // 为控件添加事件监听器
   document.getElementById("shadow-color").addEventListener("change", drawMap);
   document.getElementById("shadow-blur").addEventListener("input", function () {
@@ -498,9 +507,6 @@ function initApp() {
     .addEventListener("change", updateSettingsVisibility);
   document
     .getElementById("classic-fill-color")
-    .addEventListener("change", drawMap);
-  document
-    .getElementById("classic-inner-color")
     .addEventListener("change", drawMap);
   document
     .getElementById("classic-fill-opacity")

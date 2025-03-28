@@ -4,13 +4,14 @@ body {
   background-color: #f5f7fa;
   color: #333;
   line-height: 1.6;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -20,8 +21,9 @@ h2 {
   text-align: center;
   font-weight: 600;
   position: relative;
-  padding-bottom: 30px;
-  margin: 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin: 0 0 15px 0;
 }
 
 h2:after {
@@ -57,6 +59,7 @@ h4 {
   gap: 20px;
   flex: 1;
   overflow: hidden;
+  padding: 0 20px;
 }
 
 .canvas-container {
@@ -68,7 +71,7 @@ h4 {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 20px;
-  min-height: 400px;
+  overflow: hidden;
 }
 
 canvas {
@@ -220,8 +223,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 footer {
   text-align: center;
-  margin-top: auto;
-  padding: 15px 0;
+  padding: 10px 0;
   font-size: 13px;
   color: #78909c;
   border-top: 1px solid #eceff1;
@@ -229,6 +231,16 @@ footer {
 
 /* 响应式调整 */
 @media (max-width: 768px) {
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .container {
+    height: auto;
+    min-height: 100vh;
+  }
+
   .controls {
     flex-direction: column;
   }
@@ -245,15 +257,33 @@ footer {
   .control-group {
     width: 100%;
   }
+
+  .canvas-container {
+    min-height: 300px;
+  }
+}
+
+@media (min-width: 600px) {
+  .main-content {
+    flex-direction: row;
+    height: calc(100% - 100px); /* 减去标题和页脚的高度 */
+  }
+
+  .controls-panel {
+    width: 350px;
+    min-width: 350px;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .canvas-container {
+    height: 100%;
+  }
 }
 
 @media (min-width: 992px) {
   .controls-panel {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .canvas-container {
-    max-height: 600px;
+    width: 400px;
+    min-width: 400px;
   }
 }
