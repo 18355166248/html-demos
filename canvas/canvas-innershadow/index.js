@@ -166,62 +166,6 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
   }
 }
 
-// 经典内阴影效果
-function drawClassicInnerShadow1(
-  coordinates,
-  scale,
-  offsetX,
-  offsetY,
-  shadowBlur,
-  shadowColor
-) {
-  ctx.save();
-
-  // 首先绘制主要路径
-  ctx.beginPath();
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.closePath();
-
-  // 创建剪切区域
-  ctx.clip();
-
-  // 内阴影设置
-  ctx.shadowBlur = shadowBlur;
-  ctx.shadowColor = shadowColor;
-
-  // 通过反向绘制一个略小的形状来创建内阴影效果
-  ctx.beginPath();
-
-  // 为了创建内阴影效果，我们需要在边缘之外绘制
-  ctx.rect(0 - 100, 0 - 100, canvas.width + 200, canvas.height + 200);
-
-  // 然后再次绘制地图路径，这次是反向的（顺时针和逆时针的不同）
-  for (let i = coordinates.length - 1; i >= 0; i--) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === coordinates.length - 1) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-
-  ctx.fillStyle = shadowColor;
-  ctx.fill();
-
-  ctx.restore();
-}
-
 function drawClassicInnerShadow(
   coordinates,
   scale,
@@ -259,7 +203,7 @@ function drawClassicInnerShadow(
   ctx.save();
   // destination-over 在现有的画布内容后面绘制新的图形,绘制不会导致画布上面之前的图形都变为透明
   ctx.globalCompositeOperation = "destination-over";
-  ctx.fillStyle = "rgba(0, 255, 0, 0.1)";
+  ctx.fillStyle = "rgba(0, 255, 0, 0.01)";
   ctx.fill(path2D);
   ctx.restore();
 }
