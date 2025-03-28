@@ -7,32 +7,101 @@
     <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <h2>地图 - Canvas内阴影效果展示</h2>
+    <div class="container">
+      <h2>地图 - Canvas内阴影效果展示</h2>
 
-    <div class="controls">
-      <div class="control-group">
-        <label for="shadow-color">阴影颜色</label>
-        <input type="color" id="shadow-color" value="#000000" />
+      <div class="main-content">
+        <div class="controls-panel">
+          <div class="controls-header">
+            <h3>效果参数控制</h3>
+          </div>
+
+          <div class="controls-wrapper">
+            <div class="controls">
+              <div class="control-section">
+                <h4>基础设置</h4>
+                <div class="form-row">
+                  <div class="control-group">
+                    <label for="shadow-style">阴影风格</label>
+                    <select id="shadow-style">
+                      <option value="classic">经典内阴影</option>
+                      <option value="glow">内发光效果</option>
+                      <option value="multiple">多层阴影</option>
+                      <option value="gradient">渐变阴影</option>
+                    </select>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="shadow-color">阴影颜色</label>
+                    <input type="color" id="shadow-color" value="#000000" />
+                  </div>
+
+                  <div class="control-group">
+                    <label for="shadow-blur">阴影模糊值</label>
+                    <div class="range-control">
+                      <input
+                        type="range"
+                        id="shadow-blur"
+                        min="1"
+                        max="30"
+                        value="15"
+                      />
+                      <span id="blur-value">15</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 经典内阴影的配置项 -->
+              <div id="classic-settings" class="shadow-settings">
+                <h4>细节调整</h4>
+                <div class="form-row">
+                  <div class="control-group">
+                    <label for="classic-fill-color">填充颜色</label>
+                    <input
+                      type="color"
+                      id="classic-fill-color"
+                      value="#4CAF50"
+                    />
+                  </div>
+
+                  <div class="control-group">
+                    <label for="classic-fill-opacity">填充透明度</label>
+                    <div class="range-control">
+                      <input
+                        type="range"
+                        id="classic-fill-opacity"
+                        min="0"
+                        max="100"
+                        value="1"
+                      />
+                      <span id="fill-opacity-value">1%</span>
+                    </div>
+                  </div>
+
+                  <div class="control-group">
+                    <label for="classic-inner-color">内阴影颜色</label>
+                    <input
+                      type="color"
+                      id="classic-inner-color"
+                      value="#000000"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="mapCanvas"></canvas>
+        </div>
       </div>
 
-      <div class="control-group">
-        <label for="shadow-blur">阴影模糊值</label>
-        <input type="range" id="shadow-blur" min="1" max="30" value="15" />
-        <span id="blur-value">15</span>
-      </div>
-
-      <div class="control-group">
-        <label for="shadow-style">阴影风格</label>
-        <select id="shadow-style">
-          <option value="classic">经典内阴影</option>
-          <option value="glow">内发光效果</option>
-          <option value="multiple">多层阴影</option>
-          <option value="gradient">渐变阴影</option>
-        </select>
-      </div>
+      <footer>
+        <p>Canvas内阴影渲染技术展示 &copy; 2023</p>
+      </footer>
     </div>
-
-    <canvas id="mapCanvas"></canvas>
 
     <script type="module" src="./index.js"></script>
   </body>

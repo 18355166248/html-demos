@@ -37,6 +37,15 @@ function drawMap() {
   // 绘制地图主体
   ctx.save();
 
+  // 地图填充
+  // drawPolygon(
+  //   data.geometry.coordinates[0][0],
+  //   scale,
+  //   offsetX,
+  //   offsetY,
+  //   "#e0f7fa"
+  // );
+
   // 绘制内阴影效果
   drawInnerShadow(data.geometry.coordinates[0][0], scale, offsetX, offsetY);
 
@@ -167,12 +176,6 @@ function drawClassicInnerShadow(
 ) {
   ctx.save();
 
-  // 获取经典内阴影的自定义配置
-  const fillColor = document.getElementById("classic-fill-color").value;
-  const fillOpacity =
-    document.getElementById("classic-fill-opacity").value / 100;
-  const innerColor = document.getElementById("classic-inner-color").value;
-
   const path2D = new Path2D();
   // 首先绘制主要路径
   for (let i = 0; i < coordinates.length; i++) {
@@ -187,12 +190,12 @@ function drawClassicInnerShadow(
   }
   path2D.closePath();
 
-  // 内阴影设置
+  // // 内阴影设置
   ctx.save();
   // source-out 在不与现有画布内容重叠的地方绘制新图形,绘制会导致画布上面之前的图形都变成透明的
   ctx.globalCompositeOperation = "source-out";
   ctx.shadowBlur = shadowBlur;
-  ctx.shadowColor = innerColor;
+  ctx.shadowColor = "#000";
   ctx.fillStyle = shadowColor;
   ctx.fill(path2D);
   ctx.restore();
@@ -200,8 +203,7 @@ function drawClassicInnerShadow(
   ctx.save();
   // destination-over 在现有的画布内容后面绘制新的图形,绘制不会导致画布上面之前的图形都变为透明
   ctx.globalCompositeOperation = "destination-over";
-  const rgbaFill = hexToRgba(fillColor, fillOpacity);
-  ctx.fillStyle = rgbaFill;
+  ctx.fillStyle = "rgba(0, 255, 0, 0.01)";
   ctx.fill(path2D);
   ctx.restore();
 }
@@ -436,92 +438,13 @@ function hexToRgba(hex, opacity) {
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
-// 处理窗口大小变化
-function handleResize() {
-  // 更新canvas大小
-  const canvasContainer = document.querySelector(".canvas-container");
-  const containerWidth = canvasContainer.clientWidth - 40; // 减去内边距
-  const containerHeight = canvasContainer.clientHeight - 40;
-  const size = Math.min(containerWidth, containerHeight, 600); // 设置最大尺寸
-
-  canvas.width = size;
-  canvas.height = size;
-
-  // 重新绘制
+// 为控件添加事件监听器
+document.getElementById("shadow-color").addEventListener("change", drawMap);
+document.getElementById("shadow-blur").addEventListener("input", function () {
+  document.getElementById("blur-value").textContent = this.value;
   drawMap();
-}
+});
+document.getElementById("shadow-style").addEventListener("change", drawMap);
 
-// 根据所选样式显示/隐藏相应设置面板
-function updateSettingsVisibility() {
-  const selectedStyle = document.getElementById("shadow-style").value;
-  const classicSettings = document.getElementById("classic-settings");
-
-  // 隐藏所有设置面板
-  document.querySelectorAll(".shadow-settings").forEach((panel) => {
-    panel.style.display = "none";
-  });
-
-  // 显示对应的设置面板
-  if (selectedStyle === "classic") {
-    classicSettings.style.display = "block";
-  }
-
-  // 重新绘制地图
-  drawMap();
-}
-
-// 根据屏幕宽度调整布局
-function adjustLayout() {
-  const isMobile = window.innerWidth <= 768;
-  const controls = document.querySelector(".controls");
-
-  if (isMobile) {
-    controls.style.flexDirection = "column";
-  } else {
-    controls.style.flexDirection = "row";
-  }
-}
-
-// 初始化应用
-function initApp() {
-  // 设置初始布局
-  adjustLayout();
-
-  // 为控件添加事件监听器
-  document.getElementById("shadow-color").addEventListener("change", drawMap);
-  document.getElementById("shadow-blur").addEventListener("input", function () {
-    document.getElementById("blur-value").textContent = this.value;
-    drawMap();
-  });
-  document
-    .getElementById("shadow-style")
-    .addEventListener("change", updateSettingsVisibility);
-  document
-    .getElementById("classic-fill-color")
-    .addEventListener("change", drawMap);
-  document
-    .getElementById("classic-inner-color")
-    .addEventListener("change", drawMap);
-  document
-    .getElementById("classic-fill-opacity")
-    .addEventListener("input", function () {
-      document.getElementById("fill-opacity-value").textContent =
-        this.value + "%";
-      drawMap();
-    });
-
-  // 初始调用更新设置面板可见性
-  updateSettingsVisibility();
-
-  // 为了确保至少显示一些内容，先用简化数据绘制一次
-  drawMap();
-
-  // 响应窗口大小变化
-  window.addEventListener("resize", function () {
-    handleResize();
-    adjustLayout();
-  });
-}
-
-// 页面加载完成后初始化应用
-document.addEventListener("DOMContentLoaded", initApp);
+// 为了确保至少显示一些内容，先用简化数据绘制一次
+drawMap();
