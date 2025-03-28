@@ -77,45 +77,23 @@ function calculateBounds(coordinates) {
   return { minX, minY, maxX, maxY };
 }
 
-// 绘制多边形填充
-function drawPolygon(coordinates, scale, offsetX, offsetY, fillColor) {
-  ctx.beginPath();
-
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-
-  ctx.closePath();
-  ctx.fillStyle = fillColor;
-  ctx.fill();
-}
-
 // 绘制边界线
 function drawBorder(coordinates, scale, offsetX, offsetY) {
-  ctx.beginPath();
-
+  const path2D = new Path2D();
   for (let i = 0; i < coordinates.length; i++) {
     const x = coordinates[i][0] * scale + offsetX;
     const y = coordinates[i][1] * scale + offsetY;
 
     if (i === 0) {
-      ctx.moveTo(x, y);
+      path2D.moveTo(x, y);
     } else {
-      ctx.lineTo(x, y);
+      path2D.lineTo(x, y);
     }
   }
-
-  ctx.closePath();
+  path2D.closePath();
   ctx.strokeStyle = "#0277bd";
   ctx.lineWidth = 1.5;
-  ctx.stroke();
+  ctx.stroke(path2D);
 }
 
 // 绘制内阴影效果
@@ -126,35 +104,10 @@ function drawInnerShadow(coordinates, scale, offsetX, offsetY) {
 
   switch (shadowStyle) {
     case "glow":
-      drawInnerGlow(
-        coordinates,
-        scale,
-        offsetX,
-        offsetY,
-        shadowBlur,
-        shadowColor
-      );
       break;
     case "multiple":
-      drawMultipleShadow(
-        coordinates,
-        scale,
-        offsetX,
-        offsetY,
-        shadowBlur,
-        shadowColor
-      );
       break;
     case "gradient":
-      drawGradientShadow(
-        coordinates,
-        scale,
-        offsetX,
-        offsetY,
-        shadowBlur,
-        shadowColor,
-        shadowColor
-      );
       break;
     case "classic":
     default:
@@ -215,228 +168,6 @@ function drawClassicInnerShadow(
   const rgbaFill = hexToRgba(fillColor, fillOpacity);
   ctx.fillStyle = rgbaFill;
   ctx.fill(path2D);
-  ctx.restore();
-}
-
-// 内发光效果
-function drawInnerGlow(
-  coordinates,
-  scale,
-  offsetX,
-  offsetY,
-  shadowBlur,
-  shadowColor
-) {
-  ctx.save();
-
-  // 绘制主要路径
-  ctx.beginPath();
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.closePath();
-
-  // 创建剪切区域
-  ctx.clip();
-
-  // 内发光设置
-  ctx.shadowBlur = shadowBlur * 2;
-  ctx.shadowColor = shadowColor;
-
-  // 绘制小一些的路径创建内发光效果
-  ctx.beginPath();
-  const shrinkFactor = 0.97;
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    // 向中心收缩
-    const shrunkX = centerX + (x - centerX) * shrinkFactor;
-    const shrunkY = centerY + (y - centerY) * shrinkFactor;
-
-    if (i === 0) {
-      ctx.moveTo(shrunkX, shrunkY);
-    } else {
-      ctx.lineTo(shrunkX, shrunkY);
-    }
-  }
-
-  ctx.closePath();
-  ctx.strokeStyle = shadowColor;
-  ctx.lineWidth = 3;
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-// 多层阴影效果
-function drawMultipleShadow(
-  coordinates,
-  scale,
-  offsetX,
-  offsetY,
-  shadowBlur,
-  shadowColor
-) {
-  // 绘制第一层
-  ctx.save();
-
-  ctx.beginPath();
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.closePath();
-  ctx.clip();
-
-  // 第一层阴影
-  ctx.shadowBlur = shadowBlur;
-  ctx.shadowColor = shadowColor;
-
-  ctx.beginPath();
-  ctx.rect(0 - 100, 0 - 100, canvas.width + 200, canvas.height + 200);
-  for (let i = coordinates.length - 1; i >= 0; i--) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === coordinates.length - 1) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-  ctx.fill();
-  ctx.restore();
-
-  // 绘制第二层
-  ctx.save();
-  ctx.beginPath();
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.closePath();
-  ctx.clip();
-
-  // 第二层阴影
-  ctx.shadowBlur = shadowBlur / 2;
-  ctx.shadowColor = shadowColor;
-
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-
-  ctx.beginPath();
-  const shrinkFactor = 0.98;
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    // 向中心收缩
-    const shrunkX = centerX + (x - centerX) * shrinkFactor;
-    const shrunkY = centerY + (y - centerY) * shrinkFactor;
-
-    if (i === 0) {
-      ctx.moveTo(shrunkX, shrunkY);
-    } else {
-      ctx.lineTo(shrunkX, shrunkY);
-    }
-  }
-  ctx.closePath();
-  ctx.strokeStyle = shadowColor;
-  ctx.lineWidth = 5;
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-// 渐变阴影效果
-function drawGradientShadow(
-  coordinates,
-  scale,
-  offsetX,
-  offsetY,
-  shadowBlur,
-  shadowColor,
-  shadowOpacity
-) {
-  ctx.save();
-
-  // 绘制主要路径
-  ctx.beginPath();
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.closePath();
-
-  // 创建剪切区域
-  ctx.clip();
-
-  // 创建渐变
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-
-  // 计算渐变半径
-  let maxDistance = 0;
-  for (let i = 0; i < coordinates.length; i++) {
-    const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
-    const distance = Math.sqrt(
-      Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-    );
-    if (distance > maxDistance) maxDistance = distance;
-  }
-
-  const gradient = ctx.createRadialGradient(
-    centerX,
-    centerY,
-    maxDistance * 0.5,
-    centerX,
-    centerY,
-    maxDistance
-  );
-
-  // 添加渐变颜色
-  gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
-  gradient.addColorStop(1, hexToRgba(shadowColor, shadowOpacity));
-
-  // 绘制渐变阴影
-  ctx.shadowBlur = shadowBlur;
-  ctx.shadowColor = shadowColor;
-
-  ctx.beginPath();
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   ctx.restore();
 }
 
