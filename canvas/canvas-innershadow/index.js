@@ -83,6 +83,8 @@ function drawBorder(coordinates, scale, offsetX, offsetY) {
   for (let i = 0; i < coordinates.length; i++) {
     const x = coordinates[i][0] * scale + offsetX;
     const y = coordinates[i][1] * scale + offsetY;
+    // // 翻转y轴坐标以纠正地图方向
+    //  const y = canvas.height - (coordinates[i][1] * scale + offsetY);
 
     if (i === 0) {
       path2D.moveTo(x, y);
@@ -142,7 +144,9 @@ function drawClassicInnerShadow(
   // 首先绘制主要路径
   for (let i = 0; i < coordinates.length; i++) {
     const x = coordinates[i][0] * scale + offsetX;
-    const y = coordinates[i][1] * scale + offsetY;
+    // const y = coordinates[i][1] * scale + offsetY;
+    // // 翻转y轴坐标以纠正地图方向
+    const y = canvas.height - (coordinates[i][1] * scale + offsetY);
 
     if (i === 0) {
       path2D.moveTo(x, y);
