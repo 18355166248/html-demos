@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transition vs Animation 动画演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .demo-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .demo-card {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .demo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .demo-title {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .demo-description {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .animation-area {
+      height: 200px;
+      background: #fff;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #e9ecef;
+    }
+
+    /* Transition 演示元素 */
+    .transition-element {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      transition: all 0.5s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .transition-element:hover {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(45deg, #48dbfb, #0abde3);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      transform: translate(-50%, -50%) rotate(180deg);
+    }
+
+    .transition-element.active {
+      background: linear-gradient(45deg, #ff9ff3, #f368e0);
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    /* Animation 演示元素 */
+    .animation-element {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(45deg, #54a0ff, #2e86de);
+      border-radius: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .animation-element.playing {
+      animation: bounce 1s infinite, rotate 2s linear infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      20%,
+      50%,
+      80%,
+      100% {
+        transform: translate(-50%, -50%) translateY(0);
+      }
+
+      40% {
+        transform: translate(-50%, -50%) translateY(-30px);
+      }
+
+      60% {
+        transform: translate(-50%, -50%) translateY(-15px);
+      }
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.secondary {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+    }
+
+    .comparison-table {
+      background: #fff;
+      border-radius: 15px;
+      padding: 25px;
+      margin-top: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .comparison-table h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    th {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    .code-example {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+    }
+
+    .highlight {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .demo-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>🎨 Transition vs Animation 动画演示</h1>
+
+    <div class="intro">
+      <p>这个页面展示了 CSS Transition 和 Animation 的区别和用法。</p>
+      <p><strong>Transition:</strong> 从一个状态到另一个状态的平滑过渡 | <strong>Animation:</strong> 可以创建复杂的多步骤动画序列</p>
+    </div>
+
+    <div class="demo-section">
+      <!-- Transition 演示 -->
+      <div class="demo-card">
+        <h3 class="demo-title">🔄 Transition 演示</h3>
+        <p class="demo-description">
+          Transition 用于在状态改变时创建平滑的过渡效果。
+          将鼠标悬停在元素上或点击按钮来触发动画。
+        </p>
+        <div class="animation-area">
+          <div class="transition-element" id="transitionElement"></div>
+        </div>
+        <div class="controls">
+          <button class="btn" onclick="triggerTransition()">触发过渡</button>
+          <button class="btn secondary" onclick="resetTransition()">重置</button>
+        </div>
+      </div>
+
+      <!-- Animation 演示 -->
+      <div class="demo-card">
+        <h3 class="demo-title">🎭 Animation 演示</h3>
+        <p class="demo-description">
+          Animation 可以创建复杂的多步骤动画序列。
+          点击按钮开始/停止动画。
+        </p>
+        <div class="animation-area">
+          <div class="animation-element" id="animationElement"></div>
+        </div>
+        <div class="controls">
+          <button class="btn" onclick="toggleAnimation()">开始/停止动画</button>
+          <button class="btn secondary" onclick="resetAnimation()">重置</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 详细对比表格 -->
+    <div class="comparison-table">
+      <h3>📊 Transition vs Animation 详细对比</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>特性</th>
+            <th>Transition</th>
+            <th>Animation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>触发方式</strong></td>
+            <td>状态改变时自动触发</td>
+            <td>可以自动播放或手动触发</td>
+          </tr>
+          <tr>
+            <td><strong>动画复杂度</strong></td>
+            <td>简单的两状态过渡</td>
+            <td>复杂的多步骤序列</td>
+          </tr>
+          <tr>
+            <td><strong>循环播放</strong></td>
+            <td>不支持</td>
+            <td>支持无限循环</td>
+          </tr>
+          <tr>
+            <td><strong>关键帧</strong></td>
+            <td>只有开始和结束状态</td>
+            <td>支持多个关键帧</td>
+          </tr>
+          <tr>
+            <td><strong>适用场景</strong></td>
+            <td>悬停效果、状态切换</td>
+            <td>复杂动画、加载动画</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 代码示例 -->
+    <div class="comparison-table">
+      <h3>💻 代码示例</h3>
+
+      <h4>Transition 示例：</h4>
+      <div class="code-example">
+        <pre><code>.element {
+  transition: all 0.5s ease;
+}
+
+.element:hover {
+  transform: scale(1.2);
+  background-color: #ff6b6b;
+}</code></pre>
+      </div>
+
+      <h4>Animation 示例：</h4>
+      <div class="code-example">
+        <pre><code>@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+.element {
+  animation: bounce 1s infinite;
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- 使用建议 -->
+    <div class="comparison-table">
+      <h3>💡 使用建议</h3>
+      <ul style="line-height: 1.8; color: #666;">
+        <li><span class="highlight">Transition</span> 适用于：按钮悬停效果、表单验证状态、简单的状态切换</li>
+        <li><span class="highlight">Animation</span> 适用于：加载动画、复杂的交互动画、循环播放的动画</li>
+        <li>两者可以结合使用，Transition 处理状态变化，Animation 处理复杂动画</li>
+        <li>注意性能优化，避免同时使用过多动画效果</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    let animationPlaying = false;
+    let transitionActive = false;
+
+    function triggerTransition () {
+      const element = document.getElementById('transitionElement');
+      if (transitionActive) {
+        element.classList.remove('active');
+        transitionActive = false;
+      } else {
+        element.classList.add('active');
+        transitionActive = true;
+      }
+    }
+
+    function resetTransition () {
+      const element = document.getElementById('transitionElement');
+      element.classList.remove('active');
+      transitionActive = false;
+    }
+
+    function toggleAnimation () {
+      const element = document.getElementById('animationElement');
+      if (animationPlaying) {
+        element.classList.remove('playing');
+        animationPlaying = false;
+      } else {
+        element.classList.add('playing');
+        animationPlaying = true;
+      }
+    }
+
+    function resetAnimation () {
+      const element = document.getElementById('animationElement');
+      element.classList.remove('playing');
+      animationPlaying = false;
+    }
+
+    // 添加键盘快捷键
+    document.addEventListener('keydown', function (event) {
+      switch (event.key) {
+        case '1':
+          triggerTransition();
+          break;
+        case '2':
+          toggleAnimation();
+          break;
+        case 'r':
+        case 'R':
+          resetTransition();
+          resetAnimation();
+          break;
+      }
+    });
+
+    // 添加触摸支持
+    document.getElementById('transitionElement').addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      triggerTransition();
+    });
+
+    document.getElementById('animationElement').addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      toggleAnimation();
+    });
+  </script>
+</body>
+
+</html>

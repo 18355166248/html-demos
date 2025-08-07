@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片加载不影响DOMContentLoaded演示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .demo-section {
+      border: 2px solid #007bff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+
+    .event-log {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin: 15px 0;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .image-card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      background: white;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .status {
+      margin-top: 10px;
+      padding: 5px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    .status.loading {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status.loaded {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .highlight-box {
+      background: #e7f3ff;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .button:hover {
+      background: #0056b3;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #e9ecef;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #28a745;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🎯 图片加载不影响DOMContentLoaded演示</h1>
+
+  <div class="highlight-box">
+    <h3>📚 核心概念</h3>
+    <p><strong>DOMContentLoaded</strong> 事件在HTML文档被完全加载和解析时触发，<strong>不等待图片、样式表等外部资源</strong>。</p>
+    <p><strong>window.onload</strong> 事件在所有资源（包括图片）都加载完成后才触发。</p>
+  </div>
+
+  <div class="demo-section">
+    <h2>🖼️ 图片加载测试</h2>
+    <p>点击按钮开始加载图片，观察事件触发顺序：</p>
+
+    <button class="button" onclick="startImageLoading()">开始加载图片</button>
+    <button class="button" onclick="clearLog()">清空日志</button>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressBar"></div>
+    </div>
+
+    <div class="image-grid" id="imageGrid">
+      <!-- 图片将在这里动态添加 -->
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h2>📊 事件日志</h2>
+    <div class="event-log" id="eventLog">
+      <div>等待开始...</div>
+    </div>
+  </div>
+
+  <script>
+    let startTime;
+    let loadedImages = 0;
+    const totalImages = 8;
+
+    // 日志函数
+    function logEvent (message, type = 'info') {
+      const timestamp = Date.now();
+      const elapsed = startTime ? timestamp - startTime : 0;
+      const logDiv = document.getElementById('eventLog');
+      const logEntry = document.createElement('div');
+
+      const timeStr = `[${elapsed}ms]`;
+      const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+
+      logEntry.innerHTML = `<span style="color: #00ff00;">${timeStr}</span> ${icon} ${message}`;
+      logDiv.appendChild(logEntry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+
+      console.log(`${timeStr} ${message}`);
+    }
+
+    // DOMContentLoaded 事件监听
+    document.addEventListener("DOMContentLoaded", function () {
+      logEvent("🎉 DOMContentLoaded 触发 - HTML文档解析完成", 'success');
+    });
+
+    // window.onload 事件监听
+    window.addEventListener("load", function () {
+      logEvent("🏁 window.onload 触发 - 所有资源加载完成", 'success');
+    });
+
+    // 开始图片加载
+    function startImageLoading () {
+      startTime = Date.now();
+      loadedImages = 0;
+
+      logEvent("🚀 开始加载图片");
+
+      const imageGrid = document.getElementById('imageGrid');
+      imageGrid.innerHTML = '';
+
+      // 创建8张图片，模拟网络延迟
+      for (let i = 1; i <= totalImages; i++) {
+        const imageCard = document.createElement('div');
+        imageCard.className = 'image-card';
+        imageCard.innerHTML = `
+          <img src="https://picsum.photos/300/200?random=${i}&delay=${Math.random() * 3000}"
+               alt="图片${i}"
+               onload="onImageLoad(${i})"
+               onerror="onImageError(${i})">
+          <div class="status loading" id="status${i}">加载中...</div>
+        `;
+        imageGrid.appendChild(imageCard);
+      }
+
+      logEvent("📝 图片元素已添加到DOM");
+    }
+
+    // 图片加载成功
+    function onImageLoad (imageIndex) {
+      loadedImages++;
+      const statusEl = document.getElementById(`status${imageIndex}`);
+      statusEl.className = 'status loaded';
+      statusEl.textContent = '加载完成';
+
+      logEvent(`🖼️ 图片${imageIndex} 加载完成 (${loadedImages}/${totalImages})`);
+
+      // 更新进度条
+      const progress = (loadedImages / totalImages) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+
+      if (loadedImages === totalImages) {
+        logEvent("🎊 所有图片加载完成！", 'success');
+      }
+    }
+
+    // 图片加载失败
+    function onImageError (imageIndex) {
+      const statusEl = document.getElementById(`status${imageIndex}`);
+      statusEl.className = 'status error';
+      statusEl.textContent = '加载失败';
+
+      logEvent(`❌ 图片${imageIndex} 加载失败`, 'error');
+    }
+
+    // 清空日志
+    function clearLog () {
+      document.getElementById('eventLog').innerHTML = '<div>日志已清空...</div>';
+    }
+
+    // 页面加载时的初始日志
+    logEvent("📄 页面开始加载");
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOMContentLoaded vs window.onload 演示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .image-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .image-item img {
+      max-width: 150px;
+      max-height: 100px;
+      object-fit: cover;
+    }
+
+    .log {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      margin: 10px 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .highlight {
+      background: #fff3cd;
+      padding: 10px;
+      border-left: 4px solid #ffc107;
+      margin: 10px 0;
+    }
+
+    .timeline {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+
+    .timeline h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>DOMContentLoaded vs window.onload 演示</h1>
+
+  <div class="highlight">
+    <strong>关键概念：</strong>
+    <ul>
+      <li>
+        <strong>DOMContentLoaded</strong>：当HTML文档被完全加载和解析时触发，不等待样式表、图片和子框架的加载
+      </li>
+      <li>
+        <strong>window.onload</strong>：当整个页面（包括所有依赖资源如图片、样式表等）都加载完成时触发
+      </li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <h3>事件触发顺序：</h3>
+    <ol>
+      <li>DOMContentLoaded（HTML解析完成）</li>
+      <li>图片加载完成</li>
+      <li>window.onload（所有资源加载完成）</li>
+    </ol>
+  </div>
+
+  <div class="container">
+    <h2>图片加载测试</h2>
+    <p>以下图片会模拟网络延迟加载，观察控制台输出的事件触发顺序：</p>
+
+    <div class="image-container">
+      <div class="image-item">
+        <img src="https://picsum.photos/200/150?random=1" alt="图片1" onload="logEvent('图片1加载完成', Date.now())"
+          onerror="logEvent('图片1加载失败', Date.now())" />
+        <p>图片1</p>
+      </div>
+      <div class="image-item">
+        <img src="https://picsum.photos/200/150?random=2" alt="图片2" onload="logEvent('图片2加载完成', Date.now())"
+          onerror="logEvent('图片2加载失败', Date.now())" />
+        <p>图片2</p>
+      </div>
+      <div class="image-item">
+        <img src="https://picsum.photos/200/150?random=3" alt="图片3" onload="logEvent('图片3加载完成', Date.now())"
+          onerror="logEvent('图片3加载失败', Date.now())" />
+        <p>图片3</p>
+      </div>
+      <div class="image-item">
+        <img src="https://picsum.photos/200/150?random=4" alt="图片4" onload="logEvent('图片4加载完成', Date.now())"
+          onerror="logEvent('图片4加载失败', Date.now())" />
+        <p>图片4</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>事件监听器</h2>
+    <div class="log" id="eventLog">
+      <div>事件日志将在这里显示...</div>
+    </div>
+  </div>
+
+  <script>
+    const startTime = Date.now();
+
+    function logEvent (message, timestamp = Date.now()) {
+      const cha = timestamp - startTime;
+      const logDiv = document.getElementById("eventLog");
+      const logEntry = document.createElement("div");
+      logEntry.innerHTML = `<span style="color: #007bff;">[${cha}ms]</span> ${message}`;
+      logDiv.appendChild(logEntry);
+      console.log(`[${cha}ms] ${message}`);
+    }
+
+    window.onload = function () {
+      logEvent("🎉 window.onload 触发 - 所有资源加载完成");
+    };
+    document.addEventListener("DOMContentLoaded", function () {
+      logEvent("✅ DOMContentLoaded 触发 - HTML文档解析完成");
+    });
+
+    // 模拟一些DOM操作
+    setTimeout(() => {
+      const newDiv = document.createElement("div");
+      newDiv.textContent = "动态添加的元素";
+      newDiv.style.color = "green";
+      document.body.appendChild(newDiv);
+      logEvent("📝 动态添加DOM元素");
+    }, 100);
+
+    // 模拟异步操作
+    setTimeout(() => {
+      logEvent("⏰ 异步操作完成");
+    }, 500);
+
+    logEvent("🚀 开始执行脚本");
+  </script>
+
+  <!-- 外部脚本 -->
+  <script src="./js/script.js"></script>
+  <script src="./js/async.js" async></script>
+  <script src="./js/defer.js" defer></script>
+</body>
+
+</html>
