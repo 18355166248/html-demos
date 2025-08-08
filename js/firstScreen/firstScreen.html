@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DOMContentLoaded vs window.onload 演示</title>
+    <title>页面性能指标分析 - PerformanceNavigationTiming</title>
     <style>
       body {
         font-family: Arial, sans-serif;
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 20px;
         line-height: 1.6;
@@ -46,8 +46,9 @@
         border-radius: 5px;
         font-family: monospace;
         margin: 10px 0;
-        max-height: 300px;
+        max-height: 400px;
         overflow-y: auto;
+        font-size: 12px;
       }
 
       .highlight {
@@ -67,11 +68,78 @@
       .timeline h3 {
         margin-top: 0;
       }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .metric-card {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+      }
+
+      .metric-card h4 {
+        margin: 0 0 10px 0;
+        color: #007bff;
+      }
+
+      .metric-value {
+        font-size: 18px;
+        font-weight: bold;
+        color: #28a745;
+      }
+
+      .metric-description {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 5px;
+      }
+
+      .warning {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        border-left: 4px solid #dc3545;
+      }
+
+      .info {
+        background: #d1ecf1;
+        color: #0c5460;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        border-left: 4px solid #17a2b8;
+      }
     </style>
   </head>
 
   <body>
-    <h1>DOMContentLoaded vs window.onload 演示</h1>
+    <h1>页面性能指标分析 - PerformanceNavigationTiming</h1>
+
+    <div class="warning">
+      <strong>⚠️ 重要提示：</strong>
+      <p>
+        performance.timing 已被废弃，现在使用 PerformanceNavigationTiming API
+        进行性能分析
+      </p>
+    </div>
+
+    <div class="info">
+      <strong>📊 PerformanceNavigationTiming 优势：</strong>
+      <ul>
+        <li>提供更精确的时间戳</li>
+        <li>支持高精度时间</li>
+        <li>更好的浏览器兼容性</li>
+        <li>更丰富的性能指标</li>
+      </ul>
+    </div>
 
     <div class="highlight">
       <strong>关键概念：</strong>
@@ -84,6 +152,10 @@
           <strong>window.onload</strong
           >：当整个页面（包括所有依赖资源如图片、样式表等）都加载完成时触发
         </li>
+        <li>
+          <strong>PerformanceNavigationTiming</strong
+          >：提供详细的页面加载性能指标
+        </li>
       </ul>
     </div>
 
@@ -94,6 +166,13 @@
         <li>图片加载完成</li>
         <li>window.onload（所有资源加载完成）</li>
       </ol>
+    </div>
+
+    <div class="container">
+      <h2>性能指标分析</h2>
+      <div class="metrics-grid" id="metricsGrid">
+        <!-- 性能指标将在这里动态显示 -->
+      </div>
     </div>
 
     <div class="container">
@@ -148,10 +227,10 @@
     </div>
 
     <script>
-      const startTime = Date.now();
+      const startTime = performance.now();
 
-      function logEvent(message, timestamp = Date.now()) {
-        const cha = timestamp - startTime;
+      function logEvent(message, timestamp = performance.now()) {
+        const cha = Math.round(timestamp - startTime);
         const logDiv = document.getElementById("eventLog");
         const logEntry = document.createElement("div");
         logEntry.innerHTML = `<span style="color: #007bff;">[${cha}ms]</span> ${message}`;
@@ -159,16 +238,131 @@
         console.log(`[${cha}ms] ${message}`);
       }
 
+      // 性能指标分析函数
+      function analyzePerformance() {
+        const navigation = performance.getEntriesByType("navigation")[0];
+        if (!navigation) {
+          logEvent("❌ 无法获取 PerformanceNavigationTiming 数据");
+          return;
+        }
+
+        const metrics = {
+          // 基础时间指标
+          DNS查询时间: {
+            value: Math.round(
+              navigation.domainLookupEnd - navigation.domainLookupStart
+            ),
+            description: "DNS解析耗时",
+          },
+          TCP连接时间: {
+            value: Math.round(navigation.connectEnd - navigation.connectStart),
+            description: "TCP连接建立耗时",
+          },
+          SSL握手时间: {
+            value: Math.round(
+              navigation.connectEnd - navigation.secureConnectionStart
+            ),
+            description: "SSL/TLS握手耗时",
+          },
+          请求响应时间: {
+            value: Math.round(navigation.responseEnd - navigation.requestStart),
+            description: "从发送请求到接收响应的时间",
+          },
+          DOM解析时间: {
+            value: Math.round(
+              navigation.domContentLoadedEventEnd -
+                navigation.domContentLoadedEventStart
+            ),
+            description: "DOM内容加载事件处理时间",
+          },
+          页面加载时间: {
+            value: Math.round(
+              navigation.loadEventEnd - navigation.loadEventStart
+            ),
+            description: "页面load事件处理时间",
+          },
+          总加载时间: {
+            value: Math.round(navigation.loadEventEnd - navigation.fetchStart),
+            description: "从开始获取到页面完全加载的时间",
+          },
+          "首字节时间(TTFB)": {
+            value: Math.round(
+              navigation.responseStart - navigation.requestStart
+            ),
+            description: "Time To First Byte - 首字节时间",
+          },
+          DOM内容就绪时间: {
+            value: Math.round(
+              navigation.domContentLoadedEventEnd - navigation.fetchStart
+            ),
+            description: "DOM内容加载完成时间",
+          },
+          页面完全加载时间: {
+            value: Math.round(navigation.loadEventEnd - navigation.fetchStart),
+            description: "页面完全加载完成时间",
+          },
+        };
+
+        // 显示性能指标
+        const metricsGrid = document.getElementById("metricsGrid");
+        metricsGrid.innerHTML = "";
+
+        Object.entries(metrics).forEach(([name, data]) => {
+          const metricCard = document.createElement("div");
+          metricCard.className = "metric-card";
+          metricCard.innerHTML = `
+            <h4>${name}</h4>
+            <div class="metric-value">${data.value}ms</div>
+            <div class="metric-description">${data.description}</div>
+          `;
+          metricsGrid.appendChild(metricCard);
+        });
+
+        // 记录关键指标到日志
+        logEvent(`📊 DNS查询时间: ${metrics["DNS查询时间"].value}ms`);
+        logEvent(`📊 TCP连接时间: ${metrics["TCP连接时间"].value}ms`);
+        logEvent(`📊 TTFB: ${metrics["首字节时间(TTFB)"].value}ms`);
+        logEvent(`📊 DOM内容就绪: ${metrics["DOM内容就绪时间"].value}ms`);
+        logEvent(`📊 页面完全加载: ${metrics["页面完全加载时间"].value}ms`);
+        logEvent(`📊 总加载时间: ${metrics["总加载时间"].value}ms`);
+
+        // 性能评估
+        const ttfb = metrics["首字节时间(TTFB)"].value;
+        const domReady = metrics["DOM内容就绪时间"].value;
+        const totalLoad = metrics["总加载时间"].value;
+
+        if (ttfb < 200) {
+          logEvent("✅ TTFB 优秀 (< 200ms)");
+        } else if (ttfb < 600) {
+          logEvent("⚠️ TTFB 一般 (200-600ms)");
+        } else {
+          logEvent("❌ TTFB 较差 (> 600ms)");
+        }
+
+        if (domReady < 1000) {
+          logEvent("✅ DOM就绪时间优秀 (< 1s)");
+        } else if (domReady < 3000) {
+          logEvent("⚠️ DOM就绪时间一般 (1-3s)");
+        } else {
+          logEvent("❌ DOM就绪时间较差 (> 3s)");
+        }
+
+        if (totalLoad < 2000) {
+          logEvent("✅ 总加载时间优秀 (< 2s)");
+        } else if (totalLoad < 5000) {
+          logEvent("⚠️ 总加载时间一般 (2-5s)");
+        } else {
+          logEvent("❌ 总加载时间较差 (> 5s)");
+        }
+      }
+
       window.onload = function () {
         logEvent("🎉 window.onload 触发 - 所有资源加载完成");
 
-        const whiteScreenTime =
-          performance.timing.responseStart - performance.timing.navigationStart;
-        logEvent(`🎉 白屏时间：${whiteScreenTime}ms`);
-
-        const firstScreenTime = Date.now() - performance.timing.responseStart;
-        logEvent(`🎉 首屏时间：${firstScreenTime}ms`);
+        // 使用 PerformanceNavigationTiming 分析性能
+        analyzePerformance();
       };
+
       document.addEventListener("DOMContentLoaded", function () {
         logEvent("✅ DOMContentLoaded 触发 - HTML文档解析完成");
       });
