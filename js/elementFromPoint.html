@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>elementFromPoint</title>
+    <style>
+      .container {
+        padding-top: 100px;
+      }
+      .container1 {
+        padding-top: 100px;
+      }
+      #para1 {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+        background-color: gold;
+      }
+      #para2 {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+        background-color: green;
+      }
+      #para3 {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+        background-color: pink;
+      }
+      #para4 {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid black;
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <p id="para1">Some text here</p>
+      <p id="para2">Some text here</p>
+      <p id="para3">Some text here</p>
+      <p id="para4">Some text here</p>
+    </div>
+    <div class="container1">
+      <p id="para1">Some text here</p>
+      <p id="para2">Some text here</p>
+      <p id="para3">Some text here</p>
+      <p id="para4">Some text here</p>
+    </div>
+    <div>
+      <button>Blue</button>
+      <button>Red</button>
+    </div>
+
+    <script>
+      const c0 = document.getElementsByClassName("container");
+      const c1 = document.getElementsByClassName("container1");
+      console.log("🚀 ~ c0:", c0, c0[0].getBoundingClientRect());
+      console.log("🚀 ~ c1:", c1, c1[0].getBoundingClientRect());
+
+      function changeColor(newColor) {
+        const elem = document.elementFromPoint(10, 172);
+        console.log(elem);
+        elem.style.color = newColor;
+      }
+
+      document.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          changeColor(event.target.textContent.toLowerCase());
+        });
+      });
+    </script>
+  </body>
+</html>

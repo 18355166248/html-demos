@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PerformanceObserver</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .container {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+
+      .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .image-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      .image-item img {
+        max-width: 150px;
+        max-height: 100px;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>图片加载测试</h2>
+      <p>以下图片会模拟网络延迟加载，观察控制台输出的事件触发顺序：</p>
+
+      <div class="image-container">
+        <div class="image-item">
+          <img
+            src="https://picsum.photos/200/150?random=1"
+            alt="图片1"
+            onload="logEvent('图片1加载完成', Date.now())"
+            onerror="logEvent('图片1加载失败', Date.now())"
+          />
+          <p>图片1</p>
+        </div>
+        <div class="image-item">
+          <img
+            src="https://picsum.photos/200/150?random=2"
+            alt="图片2"
+            onload="logEvent('图片2加载完成', Date.now())"
+            onerror="logEvent('图片2加载失败', Date.now())"
+          />
+          <p>图片2</p>
+        </div>
+        <div class="image-item">
+          <img
+            src="https://picsum.photos/200/150?random=3"
+            alt="图片3"
+            onload="logEvent('图片3加载完成', Date.now())"
+            onerror="logEvent('图片3加载失败', Date.now())"
+          />
+          <p>图片3</p>
+        </div>
+        <div class="image-item">
+          <img
+            src="https://picsum.photos/200/150?random=4"
+            alt="图片4"
+            onload="logEvent('图片4加载完成', Date.now())"
+            onerror="logEvent('图片4加载失败', Date.now())"
+          />
+          <p>图片4</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>事件监听器</h2>
+      <div class="log" id="eventLog">
+        <div>事件日志将在这里显示...</div>
+      </div>
+    </div>
+
+    <script>
+      const startTime = Date.now();
+
+      function logEvent(message, timestamp = Date.now()) {
+        const cha = timestamp - startTime;
+        const logDiv = document.getElementById("eventLog");
+        const logEntry = document.createElement("div");
+        logEntry.innerHTML = `<span style="color: #007bff;">[${cha}ms]</span> ${message}`;
+        logDiv.appendChild(logEntry);
+        console.log(`[${cha}ms] ${message}`);
+      }
+
+      function logEvent2(message, timestamp = Date.now()) {
+        const cha = timestamp;
+        const logDiv = document.getElementById("eventLog");
+        const logEntry = document.createElement("div");
+        logEntry.innerHTML = `<span style="color: #007bff;">[${cha}ms]</span> ${message}`;
+        logDiv.appendChild(logEntry);
+        console.log(`[${cha}ms] ${message}`);
+      }
+
+      const observer = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          console.log("🚀 ~ entry:", entry);
+          logEvent2(`${entry.name} 加载完成`, entry.startTime);
+        });
+      });
+
+      observer.observe({
+        entryTypes: ["paint", "first-input", "mark", "frame"],
+      });
+    </script>
+  </body>
+</html>

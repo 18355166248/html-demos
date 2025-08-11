@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CommonJS vs ES6 模块对比</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 2.5em;
+        font-weight: 300;
+      }
+
+      .header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+        font-size: 1.1em;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .module-type {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        border-left: 4px solid #667eea;
+      }
+
+      .module-type h2 {
+        color: #333;
+        margin-top: 0;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+      }
+
+      .module-type.es6 h2 {
+        border-bottom-color: #28a745;
+      }
+
+      .module-type.es6 {
+        border-left-color: #28a745;
+      }
+
+      .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+
+      .feature-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .feature-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #e2e8f0;
+        position: relative;
+        padding-left: 25px;
+      }
+
+      .feature-list li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+      }
+
+      .demo-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+      }
+
+      .demo-section h3 {
+        color: #333;
+        margin-top: 0;
+      }
+
+      .btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .btn:hover {
+        background: #5a67d8;
+      }
+
+      .output {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: "Courier New", monospace;
+        margin-top: 10px;
+        min-height: 100px;
+        white-space: pre-wrap;
+      }
+
+      .key-differences {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+      }
+
+      .key-differences h3 {
+        color: #856404;
+        margin-top: 0;
+      }
+
+      .difference-item {
+        margin: 15px 0;
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+        border-left: 4px solid #ffc107;
+      }
+
+      .difference-item strong {
+        color: #856404;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>CommonJS vs ES6 模块对比</h1>
+        <p>深入分析两种模块系统的语法、特性和使用场景</p>
+      </div>
+
+      <div class="content">
+        <div class="comparison-grid">
+          <div class="module-type">
+            <h2>CommonJS 模块</h2>
+
+            <h3>导出语法</h3>
+            <div class="code-block">
+              // 单个导出 module.exports = value; // 多个导出 module.exports = {
+              func1, func2, class1 }; // 动态导出 if (condition) {
+              module.exports.debug = true; }
+            </div>
+
+            <h3>导入语法</h3>
+            <div class="code-block">
+              // 导入整个模块 const module = require('./module.js'); // 解构导入
+              const { func1, func2 } = require('./module.js');
+            </div>
+
+            <h3>主要特性</h3>
+            <ul class="feature-list">
+              <li>同步加载</li>
+              <li>运行时确定</li>
+              <li>支持循环依赖</li>
+              <li>Node.js 原生支持</li>
+              <li>缓存机制</li>
+              <li>动态导入（Node.js 12+）</li>
+            </ul>
+          </div>
+
+          <div class="module-type es6">
+            <h2>ES6 模块</h2>
+
+            <h3>导出语法</h3>
+            <div class="code-block">
+              // 命名导出 export const value = 42; export function func() {} //
+              默认导出 export default class {} // 重新导出 export { name } from
+              './module.js';
+            </div>
+
+            <h3>导入语法</h3>
+            <div class="code-block">
+              // 命名导入 import { func, value } from './module.js'; // 默认导入
+              import defaultExport from './module.js'; // 命名空间导入 import *
+              as module from './module.js';
+            </div>
+
+            <h3>主要特性</h3>
+            <ul class="feature-list">
+              <li>静态分析</li>
+              <li>编译时确定</li>
+              <li>树摇优化</li>
+              <li>浏览器原生支持</li>
+              <li>异步动态导入</li>
+              <li>更好的错误处理</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="key-differences">
+          <h3>🔍 关键区别</h3>
+
+          <div class="difference-item">
+            <strong>加载时机：</strong>
+            CommonJS 是同步加载，ES6 模块支持异步加载和静态分析。
+          </div>
+
+          <div class="difference-item">
+            <strong>确定时机：</strong>
+            CommonJS 在运行时确定依赖关系，ES6 模块在编译时确定。
+          </div>
+
+          <div class="difference-item">
+            <strong>循环依赖：</strong>
+            CommonJS 支持循环依赖，ES6 模块对循环依赖有更严格的限制。
+          </div>
+
+          <div class="difference-item">
+            <strong>优化能力：</strong>
+            ES6 模块支持树摇优化，可以移除未使用的代码。
+          </div>
+
+          <div class="difference-item">
+            <strong>错误处理：</strong>
+            ES6 模块提供更好的错误信息和调试支持。
+          </div>
+        </div>
+
+        <div class="demo-section">
+          <h3>🚀 实际演示</h3>
+          <p>点击下面的按钮来查看不同模块系统的实际运行效果：</p>
+
+          <button class="btn" onclick="runCommonJSDemo()">
+            运行 CommonJS 示例
+          </button>
+          <button class="btn" onclick="runES6Demo()">运行 ES6 示例</button>
+          <button class="btn" onclick="clearOutput()">清空输出</button>
+
+          <div id="output" class="output">输出结果将在这里显示...</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      // ES6 模块演示
+      import { PI, greet, math, Calculator } from "./es6-module-example.js";
+
+      window.runES6Demo = function () {
+        const output = document.getElementById("output");
+        output.textContent = "";
+
+        try {
+          output.textContent += "=== ES6 模块演示 ===\n\n";
+          output.textContent += `PI 值: ${PI}\n`;
+          output.textContent += `问候语: ${greet("张三")}\n`;
+          output.textContent += `数学运算: ${math.add(10, 5)}\n`;
+
+          const calc = new Calculator();
+          calc.add(20).subtract(5);
+          output.textContent += `计算器结果: ${calc.getResult()}\n`;
+
+          output.textContent += "\n✅ ES6 模块导入成功！\n";
+        } catch (error) {
+          output.textContent += `❌ ES6 模块错误: ${error.message}\n`;
+        }
+      };
+
+      window.clearOutput = function () {
+        document.getElementById("output").textContent =
+          "输出结果将在这里显示...";
+      };
+    </script>
+
+    <script>
+      // CommonJS 模块演示（在浏览器中模拟）
+      window.runCommonJSDemo = function () {
+        const output = document.getElementById("output");
+        output.textContent = "";
+
+        try {
+          output.textContent += "=== CommonJS 模块演示 ===\n\n";
+          output.textContent += "注意：在浏览器中，CommonJS 需要打包工具支持\n";
+          output.textContent += "这里展示的是语法结构：\n\n";
+
+          output.textContent += "// 导出\n";
+          output.textContent += "module.exports = {\n";
+          output.textContent += "  PI: 3.14159,\n";
+          output.textContent += "  greet: (name) => `Hello, ${name}!`,\n";
+          output.textContent += "  math: { add: (a, b) => a + b }\n";
+          output.textContent += "};\n\n";
+
+          output.textContent += "// 导入\n";
+          output.textContent += 'const module = require("./module.js");\n';
+          output.textContent += "console.log(module.PI);\n";
+          output.textContent += 'console.log(module.greet("张三"));\n\n';
+
+          output.textContent += "✅ CommonJS 语法演示完成！\n";
+          output.textContent += "💡 在 Node.js 环境中可以正常运行\n";
+        } catch (error) {
+          output.textContent += `❌ 错误: ${error.message}\n`;
+        }
+      };
+    </script>
+  </body>
+</html>
